@@ -15,12 +15,28 @@
 // A marker so re-entrant compose events (e.g. reopening a draft) don't double-wrap.
 var RTL_MARKER = "data-rtl-default=\"1\"";
 
+// TEMPORARY diagnostic notification so we can see whether the handler runs.
+// Remove once RTL is confirmed working.
+function notify(item, text) {
+  try {
+    item.notificationMessages.addAsync("rtlDefaultDiag", {
+      type: Office.MailboxEnums.ItemNotificationMessageType.ErrorMessage,
+      message: ("RTL Default: " + text).substring(0, 150)
+    });
+  } catch (e) {
+    console.error("RTL Default: notify threw: " + e);
+  }
+}
+
 function onMessageComposeHandler(event) {
   var item = Office.context.mailbox.item;
+  console.log("RTL Default: handler fired");
+  notify(item, "handler fired");
 
   item.body.getAsync(Office.CoercionType.Html, function (getResult) {
     if (getResult.status !== Office.AsyncResultStatus.Succeeded) {
       console.error("RTL Default: getAsync failed: " + JSON.stringify(getResult.error));
+      notify(item, "getAsync FAILED");
       event.completed();
       return;
     }
@@ -29,6 +45,8 @@ function onMessageComposeHandler(event) {
 
     // Idempotency guard: if we've already applied RTL, do nothing.
     if (currentHtml.indexOf(RTL_MARKER) !== -1) {
+      console.log("RTL Default: already applied, skipping");
+      notify(item, "already applied, skipped");
       event.completed();
       return;
     }
@@ -41,6 +59,10 @@ function onMessageComposeHandler(event) {
       function (setResult) {
         if (setResult.status !== Office.AsyncResultStatus.Succeeded) {
           console.error("RTL Default: setAsync failed: " + JSON.stringify(setResult.error));
+          notify(item, "setAsync FAILED: " + JSON.stringify(setResult.error));
+        } else {
+          console.log("RTL Default: body set RTL");
+          notify(item, "applied RTL OK");
         }
         // Always signal completion, success or not.
         event.completed();
