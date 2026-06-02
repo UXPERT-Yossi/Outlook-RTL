@@ -73,10 +73,10 @@
           <DesktopFormFactor>
             <FunctionFile resid="Commands.Url" />
 
-            <!-- Fire our handler whenever a message is composed (new / reply / replyAll / forward / draft edit). -->
+            <!-- Fire our handler whenever a message is composed (new / reply / replyAll / forward). -->
             <ExtensionPoint xsi:type="LaunchEvent">
               <LaunchEvents>
-                <LaunchEvent Type="OnMessageCompose" FunctionName="onMessageComposeHandler" />
+                <LaunchEvent Type="OnNewMessageCompose" FunctionName="onMessageComposeHandler" />
               </LaunchEvents>
               <!-- Must match the Runtime resid for the browser runtime. -->
               <SourceLocation resid="WebViewRuntime.Url" />

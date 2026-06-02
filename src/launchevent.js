@@ -1,7 +1,7 @@
 /*
  * RTL Default — Outlook event-based add-in
  *
- * Fires on OnMessageCompose (new message, reply, reply all, forward, draft edit)
+ * Fires on OnNewMessageCompose (new message, reply, reply all, forward)
  * and forces the compose editor to render right-to-left.
  *
  * Runtime notes (these surprised me, so worth writing down):
