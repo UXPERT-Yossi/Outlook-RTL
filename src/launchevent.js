@@ -105,10 +105,15 @@ function onMessageComposeHandler(event) {
  * ─────────────────────────────────────────────────────────────────────────────
  */
 function buildRtlBody(currentHtml) {
-  // Strategy B: prepend an empty RTL paragraph where the cursor lands, and leave
-  // any quoted reply/forward content below in its original direction.
-  var rtlBlock = '<div dir="rtl" style="text-align:right;" ' + RTL_MARKER + '><br></div>';
-  return rtlBlock + currentHtml;
+  // Wrap the ENTIRE body in one RTL container (so the caret is RTL wherever Outlook
+  // places it) and include a leading empty line, also inside the container, so a
+  // brand-new message starts with the cursor on the right.
+  //
+  // Note: this also flips quoted reply/forward text to RTL. We can refine to preserve
+  // the original direction once we've confirmed the cursor lands correctly.
+  return '<div dir="rtl" style="text-align:right;" ' + RTL_MARKER + '>' +
+         '<div><br></div>' + currentHtml +
+         '</div>';
 }
 
 // REQUIRED: map the manifest's FunctionName ("onMessageComposeHandler") to the JS function.
