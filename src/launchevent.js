@@ -33,6 +33,17 @@ function onMessageComposeHandler(event) {
   console.log("RTL Default: handler fired");
   notify(item, "handler fired");
 
+  // TEMPORARY DIAGNOSTIC: write a marker to the Subject line so we can confirm the
+  // handler actually runs WITHOUT depending on the notification bar or the hidden
+  // runtime's console (both unreliable to observe in Outlook on the web). If the
+  // subject auto-fills with this text on a new message, the handler runs and the
+  // write APIs work — which means any remaining issue is purely the body RTL logic.
+  item.subject.setAsync("[RTL handler ran]", function (subjResult) {
+    if (subjResult.status !== Office.AsyncResultStatus.Succeeded) {
+      console.error("RTL Default: subject setAsync failed: " + JSON.stringify(subjResult.error));
+    }
+  });
+
   item.body.getAsync(Office.CoercionType.Html, function (getResult) {
     if (getResult.status !== Office.AsyncResultStatus.Succeeded) {
       console.error("RTL Default: getAsync failed: " + JSON.stringify(getResult.error));
